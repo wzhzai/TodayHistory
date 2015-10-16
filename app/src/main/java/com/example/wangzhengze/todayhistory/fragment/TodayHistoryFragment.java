@@ -105,7 +105,7 @@ public class TodayHistoryFragment extends Fragment {
     }
 
     private void updateDate() {
-        mTvDate.setText(mDefaultYear + "年" + mDefaultMonth + "月" + mDefaultDay + "日");
+        mTvDate.setText(mDefaultMonth + "月" + mDefaultDay + "日");
     }
 
     private void initAllViews(View view) {
@@ -125,6 +125,8 @@ public class TodayHistoryFragment extends Fragment {
                 mDefaultYear = year;
                 updateDate();
             }, mDefaultYear, mDefaultMonth - 1, mDefaultDay);
+            ((ViewGroup) (((ViewGroup) dialog.getDatePicker().getChildAt(0)).getChildAt(0)))
+                    .getChildAt(0).setVisibility(View.GONE);
             dialog.show();
         });
 
@@ -165,7 +167,7 @@ public class TodayHistoryFragment extends Fragment {
                     @Override
                     public void onError(Throwable e) {
                         mLoadingDialogManager.dismiss();
-                        Log.e(TAG, "e = " + e.getMessage());
+                        Log.e(TAG, "e = " + e.toString());
                     }
 
                     @Override
@@ -174,6 +176,7 @@ public class TodayHistoryFragment extends Fragment {
                         mDataBeans.clear();
                         mDataBeans.addAll(historyBean.data);
                         mAdapter.notifyDataSetChanged();
+                        mListView.setSelection(0);
                         mLoadingDialogManager.dismiss();
                     }
                 });
