@@ -3,9 +3,10 @@ package com.example.wangzhengze.todayhistory;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.view.View;
+import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,8 +18,15 @@ import android.view.MenuItem;
 
 import com.example.wangzhengze.todayhistory.fragment.TodayHistoryFragment;
 
+import java.io.File;
+
+import rx.Observable;
+import rx.functions.Func1;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +47,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        printAllFileNameStartWithM();
     }
 
     @Override
@@ -108,5 +118,36 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
         fm.beginTransaction().replace(R.id.main_content, fragment).commit();
+    }
+
+    private void printAllFileNameStartWithM() {
+        Observable<File> observable = Observable.from(Environment.getExternalStorageDirectory().listFiles());
+        observable
+                .flatMap(new FlatFileList())
+                .filter(file -> file.getName().toLowerCase().startsWith("m"))
+                .subscribe(s1 -> Log.e(TAG, "name = " + s1));
+    }
+
+    class FlatFileList implements Func1<File, Observable<File>> {
+
+        @Override
+        public Observable<File> call(File file) {
+            if (checkIsDirectory(file)) {
+                if (file.getName().toLowerCase().startsWith("m")) {
+                    Log.e(TAG, "name = " + file);
+                }
+                return Observable.from(file.listFiles()).flatMap(new FlatFileList());
+            }
+            return Observable.just(file);
+        }
+    }
+
+    private String[] getFileList(String path) {
+        File file = new File(path);
+        return file.list();
+    }
+
+    private boolean checkIsDirectory(File file) {
+        return file.isDirectory();
     }
 }
