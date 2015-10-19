@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.wangzhengze.todayhistory.fragment.ShowFileWithCondition;
 import com.example.wangzhengze.todayhistory.fragment.TodayHistoryFragment;
 
 import java.io.File;
@@ -48,7 +49,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        printAllFileNameStartWithM();
     }
 
     @Override
@@ -89,10 +89,10 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camara) {
+        if (id == R.id.nav_camera) {
             setCurrentFragment(id);
         } else if (id == R.id.nav_gallery) {
-
+            setCurrentFragment(id);
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
@@ -113,41 +113,13 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = null;
 
         switch (id) {
-            case R.id.nav_camara:
+            case R.id.nav_camera:
                 fragment = TodayHistoryFragment.newInstance("", "");
                 break;
+            case R.id.nav_gallery:
+                fragment = ShowFileWithCondition.newInstance("", "");
         }
         fm.beginTransaction().replace(R.id.main_content, fragment).commit();
     }
 
-    private void printAllFileNameStartWithM() {
-        Observable<File> observable = Observable.from(Environment.getExternalStorageDirectory().listFiles());
-        observable
-                .flatMap(new FlatFileList())
-                .filter(file -> file.getName().toLowerCase().startsWith("m"))
-                .subscribe(s1 -> Log.e(TAG, "name = " + s1));
-    }
-
-    class FlatFileList implements Func1<File, Observable<File>> {
-
-        @Override
-        public Observable<File> call(File file) {
-            if (checkIsDirectory(file)) {
-                if (file.getName().toLowerCase().startsWith("m")) {
-                    Log.e(TAG, "name = " + file);
-                }
-                return Observable.from(file.listFiles()).flatMap(new FlatFileList());
-            }
-            return Observable.just(file);
-        }
-    }
-
-    private String[] getFileList(String path) {
-        File file = new File(path);
-        return file.list();
-    }
-
-    private boolean checkIsDirectory(File file) {
-        return file.isDirectory();
-    }
 }
