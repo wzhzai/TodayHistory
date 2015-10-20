@@ -1,6 +1,8 @@
 package com.example.wangzhengze.todayhistory.fragment;
 
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Environment;
@@ -11,13 +13,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.wangzhengze.todayhistory.LoadingDialogManager;
 import com.example.wangzhengze.todayhistory.R;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -35,22 +47,20 @@ public class ShowFileWithCondition extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private static final String TAG = "ShowFileWithCondition";
 
+    private Context mContext;
     private String mParam1;
     private String mParam2;
-    private TextView mTvResult;
     private LoadingDialogManager mLoadingDialogManager;
-    private Subscriber<File> mSubscriber;
+
+    private ListView mListView;
 
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ShowFileWithCondition.
-     */
-    // TODO: Rename and change types and number of parameters
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mContext = activity;
+    }
+
     public static ShowFileWithCondition newInstance(String param1, String param2) {
         ShowFileWithCondition fragment = new ShowFileWithCondition();
         Bundle args = new Bundle();
@@ -84,78 +94,146 @@ public class ShowFileWithCondition extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initAllViews(view);
+        loadFolder(Environment.getExternalStorageDirectory().getPath());
     }
 
-    class MySubscriber extends Subscriber<File> {
-
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-
-        }
-
-        @Override
-        public void onNext(File file) {
-            mTvResult.append("name = " + file + ", \n\n");
-        }
-    }
 
     private void initAllViews(View view) {
-        EditText etEnter = (EditText) view.findViewById(R.id.show_file_et);
-        mTvResult = (TextView) view.findViewById(R.id.show_file_result_tv);
-        etEnter.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (mSubscriber != null) {
-                    mSubscriber.unsubscribe();
-                }
-                mSubscriber = new MySubscriber();
-                String string = s.toString();
-                Log.e(TAG, "editable = " + s);
-                mTvResult.setText("");
-                if (!TextUtils.isEmpty(string)) {
-                    printAllFileNameStartWithM(s.toString(), mSubscriber);
-                }
-            }
-        });
-    }
-
-    private void printAllFileNameStartWithM(String string, Subscriber<File> subscriber) {
-        Observable<File> observable = Observable.from(Environment.getExternalStorageDirectory().listFiles());
-        observable
-                .subscribeOn(Schedulers.io())
-                .flatMap(new FlatFileList())
-                .filter(file -> file.getName().toLowerCase().startsWith(string))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
-    }
-
-    class FlatFileList implements Func1<File, Observable<File>> {
-
-        @Override
-        public Observable<File> call(File file) {
-            if (checkIsDirectory(file)) {
-                return Observable.from(file.listFiles()).flatMap(new FlatFileList());
-            }
-            return Observable.just(file);
-        }
+        mLoadingDialogManager = new LoadingDialogManager(mContext);
+        mListView = (ListView) view.findViewById(R.id.file_list);
     }
 
     private boolean checkIsDirectory(File file) {
         return file.isDirectory();
+    }
+
+    class FileBean implements Comparable<FileBean> {
+        String name = "";
+        boolean isFolder;
+        String modifyTime = "";
+        String path = "";
+        String fatherPath = "";
+
+        @Override
+        public int compareTo(FileBean another) {
+            return name.charAt(0) > another.name.charAt(0) ? 1 : -1;
+        }
+    }
+
+    class FileListAdapter extends BaseAdapter {
+
+        private List<FileBean> mFileBeanList;
+
+        public FileListAdapter(List<FileBean> fileBeanList) {
+            mFileBeanList = fileBeanList;
+        }
+
+        class ViewHolder {
+            TextView tvName;
+            ImageView ivIcon;
+            TextView tvInfo;
+            CheckBox cbFile;
+        }
+
+        @Override
+        public int getCount() {
+            return mFileBeanList.size();
+        }
+
+        @Override
+        public FileBean getItem(int position) {
+            return mFileBeanList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
+            FileBean fileBean = getItem(position);
+
+            if (convertView == null) {
+                viewHolder = new ViewHolder();
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_file_list, parent, false);
+                viewHolder.tvName = (TextView) convertView.findViewById(R.id.file_name_tv);
+                viewHolder.tvInfo = (TextView) convertView.findViewById(R.id.file_info_tv);
+                viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.icon);
+                viewHolder.cbFile = (CheckBox) convertView.findViewById(R.id.file_cb);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+
+            viewHolder.tvName.setText(fileBean.name);
+            if (fileBean.isFolder) {
+                viewHolder.ivIcon.setImageResource(R.mipmap.folder_icon);
+            } else {
+                viewHolder.ivIcon.setImageResource(R.mipmap.unknown_file_icon);
+            }
+            viewHolder.tvInfo.setText(fileBean.modifyTime);
+
+            convertView.setOnClickListener(v -> {
+                if (fileBean.isFolder) {
+                    FileBean parentFileBean = new FileBean();
+                    parentFileBean.name = "..";
+                    parentFileBean.path = fileBean.fatherPath;
+                    parentFileBean.isFolder = true;
+                    loadFolder(fileBean.path, parentFileBean);
+                } else {
+                    Toast.makeText(mContext, "this is file!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            return convertView;
+        }
+    }
+
+    private void loadFolder(String path) {
+        loadFolder(path, null);
+    }
+
+    private void loadFolder(String path, FileBean parentFileBean) {
+        mLoadingDialogManager.show();
+        File file = new File(path);
+        List<FileBean> fileFolderBeans = new ArrayList<>();
+        List<FileBean> fileBeans = new ArrayList<>();
+        Observable.from(file.listFiles())
+                .subscribeOn(Schedulers.io())
+                .doOnNext(eachFile -> {
+                    FileBean fileBean = new FileBean();
+                    fileBean.name = eachFile.getName();
+                    fileBean.isFolder = checkIsDirectory(eachFile);
+                    fileBean.modifyTime = parseTimeToString(eachFile.lastModified());
+                    fileBean.path = eachFile.getAbsolutePath();
+                    fileBean.fatherPath = eachFile.getParent();
+                    if (fileBean.isFolder) {
+                        fileFolderBeans.add(fileBean);
+                    } else {
+                        fileBeans.add(fileBean);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(file1 -> {
+                }, throwable -> {
+                }, () -> {
+                    Collections.sort(fileFolderBeans);
+                    Collections.sort(fileBeans);
+                    List<FileBean> allBeans = new ArrayList<>();
+                    if (parentFileBean != null) {
+                        allBeans.add(parentFileBean);
+                    }
+                    allBeans.addAll(fileFolderBeans);
+                    allBeans.addAll(fileBeans);
+                    mListView.setAdapter(new FileListAdapter(allBeans));
+                    mLoadingDialogManager.dismiss();
+                });
+    }
+
+    private String parseTimeToString(long time) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
+        return format.format(time);
     }
 }
