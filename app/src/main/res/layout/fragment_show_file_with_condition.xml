@@ -4,7 +4,7 @@
               android:layout_height="match_parent"
               android:orientation="vertical"
               android:padding="15dp"
-              tools:context="com.example.wangzhengze.todayhistory.fragment.ShowFileWithCondition">
+              tools:context="com.example.wangzhengze.todayhistory.fragment.FileManagerFragment">
 
     <ListView
         android:id="@+id/file_list"

@@ -3,10 +3,8 @@ package com.example.wangzhengze.todayhistory;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,18 +14,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.wangzhengze.todayhistory.fragment.ShowFileWithCondition;
+import com.example.wangzhengze.todayhistory.fragment.BaseFragment;
+import com.example.wangzhengze.todayhistory.fragment.FileManagerFragment;
 import com.example.wangzhengze.todayhistory.fragment.TodayHistoryFragment;
-
-import java.io.File;
-
-import rx.Observable;
-import rx.functions.Func1;
+import com.example.wangzhengze.todayhistory.interfaces.IFragmentAttachCallback;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, IFragmentAttachCallback {
 
     private static final String TAG = "MainActivity";
+
+    private BaseFragment mCurrentFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +54,9 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (mCurrentFragment == null || !mCurrentFragment.onBackPressed()) {
+                super.onBackPressed();
+            }
         }
     }
 
@@ -117,9 +116,13 @@ public class MainActivity extends AppCompatActivity
                 fragment = TodayHistoryFragment.newInstance("", "");
                 break;
             case R.id.nav_gallery:
-                fragment = ShowFileWithCondition.newInstance("", "");
+                fragment = FileManagerFragment.newInstance("", "");
         }
         fm.beginTransaction().replace(R.id.main_content, fragment).commit();
     }
 
+    @Override
+    public void onFragmentAttach(BaseFragment baseFragment) {
+        mCurrentFragment = baseFragment;
+    }
 }

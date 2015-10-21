@@ -1,27 +1,22 @@
 package com.example.wangzhengze.todayhistory.fragment;
 
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Environment;
-import android.text.Editable;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.wangzhengze.todayhistory.LoadingDialogManager;
 import com.example.wangzhengze.todayhistory.R;
 
 import java.io.File;
@@ -32,37 +27,31 @@ import java.util.List;
 import java.util.Locale;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ShowFileWithCondition#newInstance} factory method to
+ * Use the {@link FileManagerFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ShowFileWithCondition extends Fragment {
+public class FileManagerFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final String TAG = "ShowFileWithCondition";
+    private static final String TAG = "FileManagerFragment";
 
-    private Context mContext;
     private String mParam1;
     private String mParam2;
-    private LoadingDialogManager mLoadingDialogManager;
 
     private ListView mListView;
+    private String mParentPath;
 
+    private int mLastPosition;
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mContext = activity;
-    }
+    private List<Integer> mLastPositionList = new ArrayList<>();
 
-    public static ShowFileWithCondition newInstance(String param1, String param2) {
-        ShowFileWithCondition fragment = new ShowFileWithCondition();
+    public static FileManagerFragment newInstance(String param1, String param2) {
+        FileManagerFragment fragment = new FileManagerFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -70,7 +59,7 @@ public class ShowFileWithCondition extends Fragment {
         return fragment;
     }
 
-    public ShowFileWithCondition() {
+    public FileManagerFragment() {
         // Required empty public constructor
     }
 
@@ -99,20 +88,43 @@ public class ShowFileWithCondition extends Fragment {
 
 
     private void initAllViews(View view) {
-        mLoadingDialogManager = new LoadingDialogManager(mContext);
         mListView = (ListView) view.findViewById(R.id.file_list);
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                mLastPosition = firstVisibleItem;
+            }
+        });
     }
 
     private boolean checkIsDirectory(File file) {
         return file.isDirectory();
     }
 
+    @Override
+    public boolean onBackPressed() {
+        if (TextUtils.isEmpty(mParentPath) || checkIsRoot(mParentPath)) {
+            return false;
+        }
+        String backParentPath = mParentPath;
+        mParentPath = mParentPath.substring(0, mParentPath.lastIndexOf(File.separator));
+        FileBean parentFileBean = createParentFileBean(mParentPath);
+        loadFolder(backParentPath, parentFileBean, true);
+        return true;
+    }
+
     class FileBean implements Comparable<FileBean> {
         String name = "";
-        boolean isFolder;
+        boolean isFolder = false;
         String modifyTime = "";
         String path = "";
         String fatherPath = "";
+        boolean isBack = false;
 
         @Override
         public int compareTo(FileBean another) {
@@ -175,13 +187,24 @@ public class ShowFileWithCondition extends Fragment {
             }
             viewHolder.tvInfo.setText(fileBean.modifyTime);
 
+            if (fileBean.isBack) {
+                viewHolder.cbFile.setVisibility(View.GONE);
+            } else {
+                viewHolder.cbFile.setVisibility(View.VISIBLE);
+            }
+
             convertView.setOnClickListener(v -> {
                 if (fileBean.isFolder) {
-                    FileBean parentFileBean = new FileBean();
-                    parentFileBean.name = "..";
-                    parentFileBean.path = fileBean.fatherPath;
-                    parentFileBean.isFolder = true;
-                    loadFolder(fileBean.path, parentFileBean);
+                    mParentPath = fileBean.path.substring(0, fileBean.path.lastIndexOf(File.separator));
+                    FileBean parentFileBean = null;
+                    if (!checkIsRoot(mParentPath)) {
+                        parentFileBean = createParentFileBean(mParentPath);
+                    }
+                    boolean isBack = fileBean.isBack;
+                    if (!isBack) {
+                        mLastPositionList.add(0, mLastPosition);
+                    }
+                    loadFolder(fileBean.path, parentFileBean, isBack);
                 } else {
                     Toast.makeText(mContext, "this is file!", Toast.LENGTH_SHORT).show();
                 }
@@ -191,11 +214,26 @@ public class ShowFileWithCondition extends Fragment {
         }
     }
 
-    private void loadFolder(String path) {
-        loadFolder(path, null);
+    @NonNull
+    private FileBean createParentFileBean(String parentPath) {
+        FileBean parentFileBean;
+        parentFileBean = new FileBean();
+        parentFileBean.name = "..";
+        parentFileBean.path = parentPath;
+        parentFileBean.isFolder = true;
+        parentFileBean.isBack = true;
+        return parentFileBean;
     }
 
-    private void loadFolder(String path, FileBean parentFileBean) {
+    private boolean checkIsRoot(String path) {
+        return path.equals(Environment.getExternalStorageDirectory().getParent());
+    }
+
+    private void loadFolder(String path) {
+        loadFolder(path, null, false);
+    }
+
+    private void loadFolder(String path, FileBean parentFileBean, boolean isBack) {
         mLoadingDialogManager.show();
         File file = new File(path);
         List<FileBean> fileFolderBeans = new ArrayList<>();
@@ -228,6 +266,10 @@ public class ShowFileWithCondition extends Fragment {
                     allBeans.addAll(fileFolderBeans);
                     allBeans.addAll(fileBeans);
                     mListView.setAdapter(new FileListAdapter(allBeans));
+                    if (isBack) {
+                        mListView.setSelection(mLastPositionList.get(0));
+                        mLastPositionList.remove(0);
+                    }
                     mLoadingDialogManager.dismiss();
                 });
     }
