@@ -19,6 +19,8 @@ public abstract class BaseFragment extends Fragment {
 
     public abstract boolean onBackPressed();
 
+    public abstract String getFragmentTitle();
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);

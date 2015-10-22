@@ -43,7 +43,7 @@ import rx.schedulers.Schedulers;
  * Use the {@link TodayHistoryFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TodayHistoryFragment extends Fragment {
+public class TodayHistoryFragment extends BaseFragment {
 
     private static final String TAG = "TodayHistoryFragment";
     private static final String ARG_PARAM1 = "param1";
@@ -52,7 +52,6 @@ public class TodayHistoryFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private Context mContext;
     private ListView mListView;
     private List<HistoryBean.DataBean> mDataBeans = new ArrayList<>();
     private int mDefaultYear = 1949;
@@ -60,7 +59,6 @@ public class TodayHistoryFragment extends Fragment {
     private int mDefaultDay = 1;
     private TextView mTvDate;
     private MyAdapter mAdapter;
-    private LoadingDialogManager mLoadingDialogManager;
 
 
     public static TodayHistoryFragment newInstance(String param1, String param2) {
@@ -74,12 +72,6 @@ public class TodayHistoryFragment extends Fragment {
 
     public TodayHistoryFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mContext = activity;
     }
 
     @Override
@@ -180,6 +172,16 @@ public class TodayHistoryFragment extends Fragment {
                         mLoadingDialogManager.dismiss();
                     }
                 });
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
+
+    @Override
+    public String getFragmentTitle() {
+        return "Today History";
     }
 
     public interface TodayHistoryService {

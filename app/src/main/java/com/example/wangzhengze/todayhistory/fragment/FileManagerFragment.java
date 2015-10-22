@@ -118,6 +118,11 @@ public class FileManagerFragment extends BaseFragment {
         return true;
     }
 
+    @Override
+    public String getFragmentTitle() {
+        return "File Manager";
+    }
+
     class FileBean implements Comparable<FileBean> {
         String name = "";
         boolean isFolder = false;
