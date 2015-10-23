@@ -4,8 +4,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,6 +16,7 @@ import android.view.MenuItem;
 
 import com.example.wangzhengze.todayhistory.fragment.BaseFragment;
 import com.example.wangzhengze.todayhistory.fragment.FileManagerFragment;
+import com.example.wangzhengze.todayhistory.fragment.LightingFragment;
 import com.example.wangzhengze.todayhistory.fragment.TodayHistoryFragment;
 import com.example.wangzhengze.todayhistory.interfaces.IFragmentAttachCallback;
 
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_gallery) {
             setCurrentFragment(id);
         } else if (id == R.id.nav_slideshow) {
-
+            setCurrentFragment(id);
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
@@ -118,6 +119,10 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_gallery:
                 fragment = FileManagerFragment.newInstance("", "");
+                break;
+            case R.id.nav_slideshow:
+                fragment = LightingFragment.newInstance("", "");
+                break;
         }
         fm.beginTransaction().replace(R.id.main_content, fragment).commit();
     }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="vertical">
+    <View
+        android:id="@+id/left_block"
+        android:layout_width="6dp"
+        android:layout_height="16dp"
+        android:background="@color/lighting_main_color"
+        android:layout_centerVertical="true"/>
+
+    <ImageView
+        android:id="@+id/right_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/menu_arrow_end"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp"/>
+
+    <TextView
+        android:id="@+id/group_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/left_block"
+        android:layout_toLeftOf="@id/right_arrow"
+        android:textSize="12sp"
+        android:textColor="@color/lighting_active_color"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:layout_centerVertical="true"
+        tools:text="我的轻醒"/>
+
+</RelativeLayout>

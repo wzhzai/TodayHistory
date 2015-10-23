@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_all"
+            android:icon="@mipmap/nar_icon_all"
+            android:checked="true"
+            android:title="全部"/>
+        <item
+            android:id="@+id/nav_sort"
+            android:icon="@mipmap/nar_icon_sort"
+            android:title="待办"/>
+        <item
+            android:id="@+id/nav_calendar"
+            android:icon="@mipmap/nar_icon_calendar"
+            android:title="日历"/>
+    </group>
+
+</menu>

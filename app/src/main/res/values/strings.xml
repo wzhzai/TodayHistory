@@ -8,4 +8,11 @@
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="lighting_main_group">
+        <item>我的轻醒</item>
+        <item>收到的轻醒</item>
+        <item>发出的轻醒</item>
+    </string-array>
+
 </resources>

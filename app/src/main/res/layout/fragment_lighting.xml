@@ -1,0 +1,74 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.example.wangzhengze.todayhistory.fragment.LightingFragment"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools_menu="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/lighting_main_color"
+            android:orientation="horizontal"
+            android:paddingLeft="15dp"
+            android:paddingRight="7dp">
+
+            <ImageView
+                android:id="@+id/user_avatar"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="5dp"
+                android:scaleType="fitCenter"
+                android:padding="1dp"
+                android:background="@drawable/lighting_user_avatar_shape"
+                android:src="@mipmap/nar_list_avatar"/>
+
+            <ImageView
+                android:id="@+id/user_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="7dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginRight="6dp"
+                android:src="@mipmap/nar_icon_dot_more"
+                android:layout_alignParentRight="true"/>
+
+            <com.example.wangzhengze.todayhistory.ui.ToolsButtonLinearLayout
+                android:id="@+id/user_menu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/user_avatar"
+                android:layout_toLeftOf="@id/user_more"
+                android:gravity="center_vertical|right"
+                android:layout_marginRight="18dp"
+                android:layout_centerVertical="true"
+                tools_menu:tools_menu="@menu/lighting_header_menu"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/light_main_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"/>
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@mipmap/contact_nar_add"
+        android:tint="@color/lighting_active_color"
+        app:backgroundTint="@color/lighting_main_color"/>
+
+</FrameLayout>

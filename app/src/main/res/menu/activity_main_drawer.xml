@@ -12,8 +12,8 @@
             android:title="文件管理器"/>
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@android:drawable/ic_menu_slideshow"
-            android:title="Slideshow"/>
+            android:icon="@mipmap/lighting_icon"
+            android:title="轻醒"/>
         <item
             android:id="@+id/nav_manage"
             android:icon="@android:drawable/ic_menu_manage"
