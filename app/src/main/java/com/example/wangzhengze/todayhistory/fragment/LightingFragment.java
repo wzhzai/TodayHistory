@@ -2,12 +2,15 @@ package com.example.wangzhengze.todayhistory.fragment;
 
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.example.wangzhengze.todayhistory.CreateLightingActivity;
 import com.example.wangzhengze.todayhistory.LightingViewManager;
 import com.example.wangzhengze.todayhistory.R;
 import com.example.wangzhengze.todayhistory.ui.ToolsButtonLinearLayout;
@@ -20,13 +23,20 @@ import com.example.wangzhengze.todayhistory.ui.ToolsButtonLinearLayout;
 public class LightingFragment extends BaseFragment {
 
     private static final String TAG = "LightingFragment";
+
     private static final String ARG_PARAM1 = "param1";
+
     private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
+
     private String mParam2;
+
     private LinearLayout mLlMain;
+
     private LightingViewManager mLightingViewManager;
+
+    private FloatingActionButton mFloatingActionButton;
 
     public static LightingFragment newInstance(String param1, String param2) {
         LightingFragment fragment = new LightingFragment();
@@ -62,6 +72,15 @@ public class LightingFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mLlMain = (LinearLayout) view.findViewById(R.id.light_main_view);
+
+        mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
+
+        mFloatingActionButton.setOnClickListener(v -> {
+            Intent intent = new Intent(mContext, CreateLightingActivity.class);
+            intent.putExtra("mode", 0);
+            startActivity(intent);
+        });
+
         loadDefaultView();
         ToolsButtonLinearLayout toolsButtonLinearLayout = (ToolsButtonLinearLayout) view.findViewById(R.id.user_menu);
         toolsButtonLinearLayout.setOnToolItemClickListener(id -> {

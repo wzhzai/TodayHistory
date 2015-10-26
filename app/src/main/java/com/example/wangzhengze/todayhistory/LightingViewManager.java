@@ -1,6 +1,7 @@
 package com.example.wangzhengze.todayhistory;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -171,6 +172,14 @@ public class LightingViewManager {
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.child_light_all, parent, false);
             }
             LightingBean child = getChild(groupPosition, childPosition);
+
+            convertView.setOnClickListener(v -> {
+                Intent intent = new Intent(mContext, CreateLightingActivity.class);
+                intent.putExtra("mode", 1);
+                intent.putExtra("bean", child);
+                mContext.startActivity(intent);
+            });
+
             TextView tvTitle = (TextView) convertView.findViewById(R.id.all_child_content);
             tvTitle.setText(child.title);
             TextView tvTime = (TextView) convertView.findViewById(R.id.all_child_time);

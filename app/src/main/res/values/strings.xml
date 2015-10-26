@@ -14,5 +14,10 @@
         <item>收到的轻醒</item>
         <item>发出的轻醒</item>
     </string-array>
+    <string name="title_activity_create_lighting">CreateLightingActivity</string>
+
+    <string name="create">新建</string>
+    <string name="detail">详情</string>
+    <string name="save">保存</string>
 
 </resources>

@@ -118,7 +118,7 @@ public class DBManager {
 
     public List<LightingBean> getHintList() {
         List<LightingBean> lightingBeanList = new ArrayList<>();
-        Cursor cursor = db.rawQuery("select * from task order by create_time", null);
+        Cursor cursor = db.rawQuery("select * from task order by create_time desc", null);
         while (cursor.moveToNext()) {
             LightingBean bean = new LightingBean();
             bean.id = cursor.getInt(cursor.getColumnIndex("_id"));
@@ -131,5 +131,25 @@ public class DBManager {
         }
         cursor.close();
         return lightingBeanList;
+    }
+
+    public void saveTask(LightingBean bean) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("title", bean.title);
+        contentValues.put("content", bean.content);
+        contentValues.put("reminder_time", 0);
+        contentValues.put("status", 0);
+        contentValues.put("create_time", System.currentTimeMillis());
+        db.insert("task", null, contentValues);
+    }
+
+    public void updateTask(LightingBean bean) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("title", bean.title);
+        contentValues.put("content", bean.content);
+        contentValues.put("reminder_time", 0);
+        contentValues.put("status", 0);
+        contentValues.put("create_time", System.currentTimeMillis());
+        db.update("task", contentValues, "_id = ?", new String[]{String.valueOf(bean.id)});
     }
 }

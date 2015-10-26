@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+    <include layout="@layout/common_nar_bar"/>
+
+    <EditText
+        android:id="@+id/lighting_et"
+        android:layout_width="match_parent"
+        android:layout_height="166dp"
+        android:background="@android:color/transparent"
+        android:gravity="start"
+        android:hint="记录内容，保持轻醒"
+        android:paddingBottom="10dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingTop="20dp"
+        android:textSize="13sp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/left_block_1"
+                android:layout_width="6dp"
+                android:layout_height="16dp"
+                android:layout_centerVertical="true"
+                android:background="@color/lighting_main_color"/>
+
+            <ImageView
+                android:id="@+id/right_arrow_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="15dp"
+                android:src="@mipmap/menu_arrow_end"/>
+
+            <TextView
+                android:id="@+id/group_name_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/right_arrow_1"
+                android:layout_toRightOf="@id/left_block_1"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:text="提醒"
+                android:textColor="@color/lighting_active_color"
+                android:textSize="12sp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        xmlns:tools="http://schemas.android.com/tools"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:orientation="vertical">
+
+            <View
+                android:id="@+id/left_block_2"
+                android:layout_width="6dp"
+                android:layout_height="16dp"
+                android:layout_centerVertical="true"
+                android:background="@color/lighting_main_color"/>
+
+            <ImageView
+                android:id="@+id/right_arrow_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="15dp"
+                android:src="@mipmap/menu_arrow_end"/>
+
+            <TextView
+                android:id="@+id/group_name_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/right_arrow_2"
+                android:layout_toRightOf="@id/left_block_2"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:text="附件"
+                android:textColor="@color/lighting_active_color"
+                android:textSize="12sp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="vertical">
+
+            <View
+                android:id="@+id/left_block_3"
+                android:layout_width="6dp"
+                android:layout_height="16dp"
+                android:layout_centerVertical="true"
+                android:background="@color/lighting_main_color"/>
+
+            <ImageView
+                android:id="@+id/right_arrow_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="15dp"
+                android:src="@mipmap/menu_arrow_end"/>
+
+            <TextView
+                android:id="@+id/group_name_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/right_arrow_3"
+                android:layout_toRightOf="@id/left_block_3"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:text="成员"
+                android:textColor="@color/lighting_active_color"
+                android:textSize="12sp"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
