@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,12 @@ public class LightingFragment extends BaseFragment {
 
     private static final String ARG_PARAM2 = "param2";
 
+    private static final int PAGE_ALL = 0;
+
+    private static final int PAGE_SORT = 1;
+
+    private static final int PAGE_CALENDAR = 2;
+
     private String mParam1;
 
     private String mParam2;
@@ -37,6 +44,8 @@ public class LightingFragment extends BaseFragment {
     private LightingViewManager mLightingViewManager;
 
     private FloatingActionButton mFloatingActionButton;
+
+    private int mCurrentPage = -1;
 
     public static LightingFragment newInstance(String param1, String param2) {
         LightingFragment fragment = new LightingFragment();
@@ -81,19 +90,21 @@ public class LightingFragment extends BaseFragment {
             startActivity(intent);
         });
 
-        loadDefaultView();
         ToolsButtonLinearLayout toolsButtonLinearLayout = (ToolsButtonLinearLayout) view.findViewById(R.id.user_menu);
         toolsButtonLinearLayout.setOnToolItemClickListener(id -> {
             View layout = null;
             switch (id) {
                 case R.id.nav_all:
                     layout = mLightingViewManager.createAllView(R.layout.view_lighting_all);
+                    mCurrentPage = PAGE_ALL;
                     break;
                 case R.id.nav_sort:
                     layout = (mLightingViewManager.createSortView(R.layout.view_lighting_sort));
+                    mCurrentPage = PAGE_SORT;
                     break;
                 case R.id.nav_calendar:
                     layout = mLightingViewManager.createCalenderView(R.layout.view_lighting_calendar);
+                    mCurrentPage = PAGE_CALENDAR;
                     break;
                 default:
                     break;
@@ -124,5 +135,18 @@ public class LightingFragment extends BaseFragment {
     @Override
     public String getFragmentTitle() {
         return "Lighting";
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        switch (mCurrentPage) {
+            case -1:
+                loadDefaultView();
+                break;
+            case PAGE_ALL:
+                mLightingViewManager.refreshAllLighting();
+                break;
+        }
     }
 }

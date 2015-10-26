@@ -39,9 +39,8 @@ public class LightingViewManager {
 
     private Map<String, List<LightingBean>> mAllLightingBeanMap = new HashMap<>();
 
-    private List<String> mAllLightingGroup = new ArrayList<>();
-
     private LoadingDialogManager mLoadingDialogManager;
+
     private ExpandableListView mExpandableListView;
 
     public LightingViewManager(Context context) {
@@ -53,10 +52,30 @@ public class LightingViewManager {
     public View createAllView(int layoutId) {
         View view = inflaterView(layoutId);
         mExpandableListView = (ExpandableListView) view.findViewById(R.id.all_exp_list);
-        mAllAdapter = new LightingAllAdapter(mAllLightingGroup, mAllLightingBeanMap);
-        mExpandableListView.setAdapter(mAllAdapter);
-        refreshAllLighting();
+        firstAllLighting();
         return view;
+    }
+
+    private void firstAllLighting() {
+        mLoadingDialogManager.show();
+        rxLoadAllLighting().subscribe(map -> {
+            mAllLightingBeanMap.clear();
+            mAllLightingBeanMap.putAll(map);
+            mAllAdapter = new LightingAllAdapter(Arrays.asList(mContext.getResources().getStringArray(R.array.lighting_main_group)), mAllLightingBeanMap);
+            mExpandableListView.setAlpha(0);
+            mExpandableListView.setTranslationX(Utils.getScreenMetrics(mContext).widthPixels);
+            mExpandableListView.setAdapter(mAllAdapter);
+            mExpandableListView.expandGroup(0);
+            mLoadingDialogManager.dismiss();
+            animationViewIn(mExpandableListView);
+        });
+    }
+
+    private Observable<Map<String, List<LightingBean>>> rxLoadAllLighting() {
+        return Observable
+                .just(loadLightingBeanMap())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     public void refreshAllLighting() {
@@ -67,16 +86,9 @@ public class LightingViewManager {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(map -> {
                     mAllLightingBeanMap.clear();
-                    String[] group = mContext.getResources().getStringArray(R.array.lighting_main_group);
-                    mAllLightingGroup.clear();
-                    mAllLightingGroup.addAll(Arrays.asList(group));
                     mAllLightingBeanMap.putAll(map);
-                    mExpandableListView.setAlpha(0);
-                    mExpandableListView.setTranslationX(Utils.getScreenMetrics(mContext).widthPixels);
                     mAllAdapter.notifyDataSetChanged();
-                    mExpandableListView.expandGroup(0);
                     mLoadingDialogManager.dismiss();
-                    animationViewIn(mExpandableListView);
                 });
     }
 
