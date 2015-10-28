@@ -29,33 +29,41 @@ import rx.schedulers.Schedulers;
 /**
  * Created by WANGZHENGZE on 2015/10/22.
  */
-public class LightingAllViewManager {
+public class LightingAllViewManager extends LightingViewManager {
 
     private static final String TAG = "LightingAllViewManager";
-
-    private Context mContext;
-
-    private LayoutInflater mLayoutInflater;
 
     private LightingAllAdapter mAllAdapter;
 
     private Map<String, List<LightingBean>> mAllLightingBeanMap = new HashMap<>();
 
-    private LoadingDialogManager mLoadingDialogManager;
-
     private ExpandableListView mExpandableListView;
 
     public LightingAllViewManager(Context context) {
-        mContext = context;
-        mLayoutInflater = LayoutInflater.from(context);
-        mLoadingDialogManager = new LoadingDialogManager(context);
+        super(context);
     }
 
-    public View createAllView(int layoutId) {
+    @Override
+    public View createView(int layoutId) {
         View view = inflaterView(layoutId);
         mExpandableListView = (ExpandableListView) view.findViewById(R.id.all_exp_list);
         firstAllLighting();
         return view;
+    }
+
+    @Override
+    public void refreshView() {
+        mLoadingDialogManager.show();
+        Observable
+                .just(loadLightingBeanMap())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(map -> {
+                    mAllLightingBeanMap.clear();
+                    mAllLightingBeanMap.putAll(map);
+                    mAllAdapter.notifyDataSetChanged();
+                    mLoadingDialogManager.dismiss();
+                });
     }
 
     private void firstAllLighting() {
@@ -78,36 +86,6 @@ public class LightingAllViewManager {
                 .just(loadLightingBeanMap())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public void refreshAllLighting() {
-        mLoadingDialogManager.show();
-        Observable
-                .just(loadLightingBeanMap())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(map -> {
-                    mAllLightingBeanMap.clear();
-                    mAllLightingBeanMap.putAll(map);
-                    mAllAdapter.notifyDataSetChanged();
-                    mLoadingDialogManager.dismiss();
-                });
-    }
-
-    private void animationViewIn(View view) {
-        view.animate().alpha(1f).translationX(0).setDuration(300).setInterpolator(new AccelerateInterpolator()).start();
-    }
-
-    public View createSortView(int layoutId) {
-        return inflaterView(layoutId);
-    }
-
-    public View createCalenderView(int layoutId) {
-        return inflaterView(layoutId);
-    }
-
-    private View inflaterView(int layoutId) {
-        return mLayoutInflater.inflate(layoutId, null);
     }
 
     private Map<String, List<LightingBean>> loadLightingBeanMap() {
