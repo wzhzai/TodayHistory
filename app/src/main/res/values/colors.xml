@@ -6,6 +6,7 @@
 
     <color name="lighting_main_color">#FDDD75</color>
     <color name="lighting_active_color">#7F6F22</color>
+    <color name="lighting_inactive_color">#D0D0D1</color>
     <color name="lighting_gray">#D7D9DD</color>
     <color name="lighting_gray_dark">#989BA2</color>
     <color name="lighting_red">#E86649</color>

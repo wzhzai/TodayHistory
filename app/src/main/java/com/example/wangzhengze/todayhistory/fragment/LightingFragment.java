@@ -5,14 +5,13 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.example.wangzhengze.todayhistory.CreateLightingActivity;
-import com.example.wangzhengze.todayhistory.LightingViewManager;
+import com.example.wangzhengze.todayhistory.LightingAllViewManager;
 import com.example.wangzhengze.todayhistory.R;
 import com.example.wangzhengze.todayhistory.ui.ToolsButtonLinearLayout;
 
@@ -41,7 +40,7 @@ public class LightingFragment extends BaseFragment {
 
     private LinearLayout mLlMain;
 
-    private LightingViewManager mLightingViewManager;
+    private LightingAllViewManager mLightingAllViewManager;
 
     private FloatingActionButton mFloatingActionButton;
 
@@ -63,7 +62,7 @@ public class LightingFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLightingViewManager = new LightingViewManager(mContext);
+        mLightingAllViewManager = new LightingAllViewManager(mContext);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -95,15 +94,15 @@ public class LightingFragment extends BaseFragment {
             View layout = null;
             switch (id) {
                 case R.id.nav_all:
-                    layout = mLightingViewManager.createAllView(R.layout.view_lighting_all);
+                    layout = mLightingAllViewManager.createAllView(R.layout.view_lighting_all);
                     mCurrentPage = PAGE_ALL;
                     break;
                 case R.id.nav_sort:
-                    layout = (mLightingViewManager.createSortView(R.layout.view_lighting_sort));
+                    layout = (mLightingAllViewManager.createSortView(R.layout.view_lighting_sort));
                     mCurrentPage = PAGE_SORT;
                     break;
                 case R.id.nav_calendar:
-                    layout = mLightingViewManager.createCalenderView(R.layout.view_lighting_calendar);
+                    layout = mLightingAllViewManager.createCalenderView(R.layout.view_lighting_calendar);
                     mCurrentPage = PAGE_CALENDAR;
                     break;
                 default:
@@ -124,7 +123,7 @@ public class LightingFragment extends BaseFragment {
     }
 
     private void loadDefaultView() {
-        replaceMainView(mLightingViewManager.createAllView(R.layout.view_lighting_all));
+        replaceMainView(mLightingAllViewManager.createAllView(R.layout.view_lighting_all));
     }
 
     @Override
@@ -145,7 +144,7 @@ public class LightingFragment extends BaseFragment {
                 loadDefaultView();
                 break;
             case PAGE_ALL:
-                mLightingViewManager.refreshAllLighting();
+                mLightingAllViewManager.refreshAllLighting();
                 break;
         }
     }

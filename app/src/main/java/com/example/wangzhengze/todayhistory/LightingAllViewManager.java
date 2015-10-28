@@ -2,12 +2,14 @@ package com.example.wangzhengze.todayhistory;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.wangzhengze.todayhistory.bean.LightingBean;
@@ -27,9 +29,9 @@ import rx.schedulers.Schedulers;
 /**
  * Created by WANGZHENGZE on 2015/10/22.
  */
-public class LightingViewManager {
+public class LightingAllViewManager {
 
-    private static final String TAG = "LightingViewManager";
+    private static final String TAG = "LightingAllViewManager";
 
     private Context mContext;
 
@@ -43,7 +45,7 @@ public class LightingViewManager {
 
     private ExpandableListView mExpandableListView;
 
-    public LightingViewManager(Context context) {
+    public LightingAllViewManager(Context context) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mLoadingDialogManager = new LoadingDialogManager(context);
@@ -201,6 +203,32 @@ public class LightingViewManager {
                 tvTime.setVisibility(View.VISIBLE);
                 tvTime.setText(String.valueOf(child.reminderTime));
             }
+
+            View document = convertView.findViewById(R.id.all_to_document);
+            ImageView ivCheckBox = (ImageView) convertView.findViewById(R.id.all_cb);
+            if (child.status == 0) {
+                ivCheckBox.setImageResource(R.mipmap.icon_checkbox_nor);
+                tvTitle.getPaint().setFlags(0);
+                tvTitle.setTextColor(mContext.getResources().getColor(android.R.color.black));
+                document.setVisibility(View.INVISIBLE);
+            } else {
+                ivCheckBox.setImageResource(R.mipmap.icon_checkbox_pres);
+                tvTitle.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+                tvTitle.setTextColor(mContext.getResources().getColor(R.color.lighting_inactive_color));
+                document.setVisibility(View.VISIBLE);
+            }
+            ivCheckBox.setOnClickListener(v -> {
+                if (child.status == 0) {
+                    ivCheckBox.setImageResource(R.mipmap.icon_checkbox_pres);
+                    child.status = 1;
+                } else {
+                    ivCheckBox.setImageResource(R.mipmap.icon_checkbox_nor);
+                    child.status = 0;
+                }
+                DBManager.getInstance(mContext).updateHintStatus(child.id, child.status);
+                notifyDataSetChanged();
+            });
+
             return convertView;
         }
 
